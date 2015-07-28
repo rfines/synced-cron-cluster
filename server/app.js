@@ -7,7 +7,17 @@ SyncedCron.add({
         return parser.text("every 2 minutes");
     }, 
     job: function() {
-        
+        Connections.app.subscribe("blogs", function(){
+            Comments.find().forEach(function(cId){
+                console.log("working on "+cId._id+" comment");
+                Comments.update({_id:cId._id}, {$set:{body:"I am stupid updated comment."}});
+            });
+            Blogs.find().forEach(function(blog){
+                console.log("working on "+blog._id+" blog");
+                Blogs.update({_id:blog._id}, {$set:{title:"Update Blog Title!!"}});
+            })
+            
+        });
         Connections.app.subscribe("logs", function(){
             console.log("Running sample method");
             var logId = "";
@@ -33,5 +43,8 @@ Meteor.methods({
         console.log("Updating a log");
 
         return Logs.update({_id:logId},{$set:{message:"Updated sample message."}});
+    },
+    updateBlogs:function(){
+
     }
 })
